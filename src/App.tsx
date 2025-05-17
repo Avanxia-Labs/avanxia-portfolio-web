@@ -18,7 +18,7 @@ import ServicesPage from "@/components/pages/routes/ServicesPage";
 import AboutPage from "@/components/pages/routes/AboutPage";
 import ContactPage from "@/components/pages/routes/ContactPage";
 import PreciosPage from "@/components/pages/routes/Precios";
-
+import ServiceCategoryPage from '@/components/pages/routes/ServiceCategoryPage';
 
 // ── Componentes generales ───────────────────────────────
 import Header           from "./components/Header";
@@ -41,6 +41,8 @@ import Digital from "./components/pages/Digital";
 import Dew from "./components/pages/Dew";
 import Milenio from "./components/pages/Milenio";
 import Engadi from "./components/pages/Engadi";
+
+import { SolutionProvider } from '@/components/configurator/SolutionConfigurator';
 
 // ── Layouts ─────────────────────────────────────────────
 function MainLayout() {
@@ -149,7 +151,7 @@ function PersistRoute() {
 // ── App (sin BrowserRouter porque está en main.tsx) ─────
 export default function App() {
   return (
-    <>
+    <SolutionProvider>
       <PersistRoute />
       <PersonalizedGreeting />
 
@@ -157,6 +159,7 @@ export default function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/services" element={<ServicesPage />} />
+          <Route path="/servicios/:categoryId" element={<ServiceCategoryPage />} />
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/precios" element={<PreciosPage />} />
@@ -183,6 +186,6 @@ export default function App() {
           <Route path="/proyectos/engadi" element={<Engadi />} />
         </Route>
       </Routes>
-    </>
+    </SolutionProvider>
   );
 }

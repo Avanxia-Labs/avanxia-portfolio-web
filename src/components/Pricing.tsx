@@ -1,13 +1,12 @@
-import { useSectionUnderlineOnView } from "../hooks/use-section-underline";
+// import { useSectionUnderlineOnView } from "../hooks/use-section-underline";
 import { Check } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "./ui/button";
-
+import { servicesAndPlansData, ServiceOrPlanItem } from "../data/servicesData";
 
 const Pricing = () => {
 
-  // Orden visual: [1, 2, 0, 3]
-const visualOrder = [2, 1, 0, 3];
+  // Si ya no es necesario un visualOrder manual, esta línea se puede eliminar.
 
   // Animación escalonada
 const container = {
@@ -47,76 +46,14 @@ const cardVariant = {
     { service: 'Diseño de Landing Page (Proyecto)', range: '$800 - $5,000+' },
   ];
 
-  const plans = [
-    {
-      name: 'Presence Landing',
-      objective: 'Establecer una presencia online básica y profesional.',
-      idealFor: 'Nuevos negocios, profesionales independientes, proyectos con necesidad de una tarjeta de presentación digital.',
-      priceDetails: [
-        'Diseño y Desarrollo de Landing Page (hasta 3 secciones clave)',
-        'Diseño Responsive (Móvil y Escritorio)',
-        'Formulario de Contacto Básico (integrado a tu email)',
-        'Optimización SEO On-page Esencial (títulos, metadescripciones)',
-        'Configuración de Google Analytics Básico',
-      ],
-      optionalAddOns: [
-        { name: 'Sección adicional personalizada', price: '+$200 USD' },
-        { name: 'Blog básico integrado (hasta 3 artículos iniciales)', price: '+$300 USD' },
-        { name: 'Integración con CRM (básica, ej. Hubspot free)', price: '+$150 USD' },
-      ],
-      price: 'Desde $800 USD',
-      priceNote: 'Pago único. Tiempo estimado de entrega: 2-3 semanas.'
-    },
-    {
-      name: 'Starter Web',
-      objective: 'Crear un sitio web completo y funcional para mostrar servicios y captar interés.',
-      idealFor: 'Pequeñas empresas, startups que necesitan más que una landing page.',
-      priceDetails: [
-        'Diseño y Desarrollo Web (hasta 5 páginas informativas)',
-        'Diseño Responsive (Móvil, Tablet, Escritorio)',
-        'Blog o Sección de Portafolio (diseño estándar, hasta 3 entradas/proyectos iniciales)',
-        'Optimización SEO On-page Completa (investigación de palabras clave incluida)',
-        'Integración con Redes Sociales (botones de compartir/seguir)',
-        'Formulario de Contacto Avanzado (con validaciones y protección anti-spam)',
-      ],
-      optionalAddOns: [
-        { name: 'Página adicional (informativa)', price: '+$250 USD' },
-        { name: 'Funcionalidad eCommerce básica (hasta 10 productos)', price: '+$700 USD' },
-        { name: 'Optimización de velocidad avanzada', price: '+$200 USD' },
-      ],
-      price: 'Desde $2,500 USD',
-      priceNote: 'Pago único. Tiempo estimado de entrega: 4-6 semanas.'
-    },
-    {
-      name: 'Growth Leads',
-      objective: 'Generar prospectos calificados y aumentar la visibilidad online.',
-      idealFor: 'Empresas enfocadas en crecimiento y adquisición de clientes.',
-      priceDetails: [
-        'Gestión de Campañas PPC (Google/Meta Ads - presupuesto no incluido)',
-        'Optimización SEO Continua',
-        'Marketing de Contenidos (Ej: 2 blogs/mes)',
-        'Gestión Básica de Redes Sociales (Ej: 2 plataformas, 8 posts/mes)',
-        'Reporte Mensual de Resultados',
-      ],
-      price: '~ $1,500 - $3,500',
-      priceNote: 'Retainer Mensual'
-    },
-    {
-      name: 'Full 360°',
-      objective: 'Solución integral de marketing digital para maximizar presencia y conversiones.',
-      idealFor: 'Empresas establecidas que buscan una estrategia completa.',
-      priceDetails: [
-        'Todo lo incluido en Growth Leads (con mayor intensidad)',
-        'Estrategia de Marketing Digital Personalizada',
-        'Email Marketing / Automatización',
-        'CRO (Optimización de Conversión) básico',
-        'Gestión Avanzada de Redes Sociales',
-        'Reportes Detallados y Consultoría Estratégica',
-      ],
-      price: '~ $4,000 - $7,500+',
-      priceNote: 'Retainer Mensual'
-    },
-  ];  const underlineRef = useSectionUnderlineOnView<HTMLSpanElement>();
+  // Filtrar solo los planes
+  const plans: ServiceOrPlanItem[] = servicesAndPlansData.filter(item => item.type === 'plan');
+  // Opcional: ordenar por isFeatured primero
+  const orderedPlans = [
+    ...plans.filter(plan => plan.isFeatured),
+    ...plans.filter(plan => !plan.isFeatured)
+  ];
+
 
   return (
     <section id="pricing" className="py-20 bg-background text-foreground dark:bg-background dark:text-foreground">
@@ -124,7 +61,7 @@ const cardVariant = {
         <div className="text-center mb-16">
           <p className="text-primary font-medium mb-2">Pricing Plans</p>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            <span ref={underlineRef}>Elige el plan perfecto para tu negocio</span>
+            <span>Elige el plan perfecto para tu negocio</span>
           </h2>
           <p className="text-foreground/70 max-w-2xl mx-auto">
             El servicio de <strong>Branding e Identidad Corporativa</strong> se cotiza por separado. Consulta por descuentos en servicios adicionales al contratar planes superiores.
@@ -138,62 +75,52 @@ const cardVariant = {
           whileInView="show"
           viewport= {{ once: false, amount: 0.3 }   }     
           >
-         {plans.map((plan, index) => {
-            const visualIndex = visualOrder[index] ?? index;
-            const isFeatured = plan.name === 'Growth Leads';
-
-            return (
-              <motion.div
-                key={index}
-                variants={cardVariant}
-                custom={visualIndex}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: false, amount: 0.3 }}
-                className={`relative glass-panel overflow-hidden group shadow-xl transition-all duration-500
-                  ${isFeatured ? 'border-primary/50 order-first md:order-none' : 'order-none'}
-                `}              
-                >
-                {isFeatured && (
-                  <div className="absolute top-0 inset-x-0">
-                    <div className="bg-amber-400 text-amber-950 text-sm font-medium py-1 px-4 rounded-b-lg mx-auto w-fit shadow-sm">
-                      Best Value
-                    </div>
-                  </div>
-                )}
-
-                <div className={`relative z-10 p-6 pt-${isFeatured ? '12' : '6'}`}>
-                  <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
-                  <p className="text-sm text-foreground/60 h-12">{plan.objective}</p>
-
-                  <div className="mt-6 mb-6">
-                    <div className="text-3xl font-bold">
-                      {plan.price.includes('-') ? plan.price.split('-')[0].trim() : plan.price}
-                      <span className="text-lg ml-1 opacity-70">{plan.price.includes('-') ? `- ${plan.price.split('-')[1].trim()}` : ''}</span>
-                    </div>
-                    <div className="text-sm text-foreground/60 mt-1">{plan.priceNote}</div>
-                  </div>
-
-                <Button asChild className={`w-full ${isFeatured ? '' : 'bg-primary/10 text-primary hover:bg-primary/20'}`}>
-                  <a href="#contact">Elegir plan</a>
-                </Button>
+        {orderedPlans.map((plan, i) => (
+          <motion.div
+            key={plan.id}
+            custom={i}
+            variants={cardVariant}
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: false, amount: 0.3 }}
+            className={`relative glass-panel overflow-hidden group shadow-xl transition-all duration-500 ${plan.isFeatured ? 'border-primary/50 order-first md:order-none' : 'order-none'}`}
+          >
+            {plan.isFeatured && (
+              <div className="absolute top-0 inset-x-0">
+                <div className="bg-amber-400 text-amber-950 text-sm font-medium py-1 px-4 rounded-b-lg mx-auto w-fit shadow-sm">
+                  Destacado
                 </div>
-
-                <div className="p-6 relative z-10 border-t border-border">
-                  <p className="font-medium mb-4">Para {plan.idealFor.split(',')[0]}</p>
-                  <ul className="space-y-3">
-                    {plan.priceDetails.map((service, i) => (
-                      <li key={i} className="flex items-start gap-3">
-                        <Check size={18} className="text-primary mt-0.5 shrink-0" />
-                        <span className="text-sm">{service}</span>
-                      </li>
-                    ))}
-                  </ul>
+              </div>
+            )}
+            <div className="relative z-10 p-6 pt-6">
+              <h3 className="text-2xl font-bold mb-2">{plan.name}</h3>
+              <p className="text-sm text-foreground/60 h-12">{plan.shortDescription}</p>
+              {plan.longDescription && <p className="text-xs text-gray-500 mb-2">{plan.longDescription}</p>}
+              <div className="mt-6 mb-6">
+                <div className="text-3xl font-bold">
+                  {plan.price !== null ? `$${plan.price}` : 'Cotizar'}
+                  <span className="text-lg ml-1 opacity-70">{plan.priceRange ? `- $${plan.priceRange[1]}` : ''}</span>
                 </div>
-              </motion.div>
-            );
-          })}
-        </motion.div>
+                <div className="text-sm text-foreground/60 mt-1">
+                  {plan.priceType === 'único' && plan.duration ? `Pago Único${plan.duration ? ` (${plan.duration})` : ''}` : ''}
+                  {plan.priceType === 'mensual' && plan.duration ? `Mensual${plan.duration ? ` (${plan.duration})` : ''}` : ''}
+                  {plan.priceType === 'desde' && plan.duration ? `Desde${plan.duration ? ` (${plan.duration})` : ''}` : ''}
+                  {/* Ajusta la lógica de priceNote según necesidad */}
+                </div>
+              </div>
+              <ul className="mb-4 space-y-2">
+                {plan.features.map((feature, idx) => (
+                  <li key={idx} className="flex items-center gap-2 text-sm">
+                    <Check className="h-4 w-4 text-primary" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button variant="secondary" className="w-full mt-auto">Añadir a Solución</Button>
+            </div>
+          </motion.div>
+        ))}
+        </motion.div> {/* Cierre del motion.div de la línea 70 */}
 
         <motion.div
           className="mt-24 max-w-5xl mx-auto px-4"
@@ -202,10 +129,10 @@ const cardVariant = {
           transition={{ duration: 0.8, ease: "easeOut" }}
           viewport={{ once: true }}
         >
-            <h2 className="text-4xl md:text-6xl font-extrabold text-center mb-8">
-              <span ref={underlineRef} className="section-title-underline">Planes y Precios</span>
-            </h2>
-           <h3 className="text-2xl font-semibold text-center mb-6">Tabla de Precios de Referencia (Mercado Norteamericano)</h3>
+          <h2 className="text-4xl md:text-6xl font-extrabold text-center mb-8">
+            <span className="section-title-underline">Planes y Precios</span>
+          </h2>
+          <h3 className="text-2xl font-semibold text-center mb-6">Tabla de Precios de Referencia (Mercado Norteamericano)</h3>
           <p className="text-center font-semibold text-gray-600 mb-8 max-w-3xl mx-auto">
             Esta tabla muestra rangos orientativos basados en nuestro análisis. Los precios finales dependerán de la complejidad y alcance específico de cada proyecto.
           </p>
