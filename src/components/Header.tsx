@@ -11,19 +11,32 @@ import {
   Users, // Icon for Equipo
   // Workflow, // Icon for Proceso
   Mail, // Icon for Contacto
+  ChevronDown,
 } from 'lucide-react';
 import ThemeSwitcher from './ThemeSwitcher'; // Import the new component
 import { Button } from './ui/button';
+import { categoriesData } from '../data/servicesData';
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuTrigger 
+} from './ui/dropdown-menu';
 
 const Header = () => {
   const navigate = useNavigate();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+// Filtrar categorías para el menú desplegable (excluir 'featured' y 'all')
+const serviceCategories = categoriesData
+  .filter(cat => cat.id !== 'featured' && cat.id !== 'all' && cat.displayInMainNav)
+  .sort((a, b) => a.order - b.order);
+
 const navLinks = [
   { name: 'Inicio', to: '/', icon: Home },
-  { name: 'Servicios', to: '/services', icon: Briefcase },
+  { name: 'Servicios', to: '/services', icon: Briefcase, hasDropdown: true },
   { name: 'Sobre Nosotros', to: '/about', icon: Users },
-  { name: 'precios', to: '/precios', icon: Users },
+  { name: 'Precios', to: '/precios', icon: Users },
 ];
 
 
@@ -70,23 +83,46 @@ const navLinks = [
         </a>
       </div>
           <div className="hidden md:flex items-center space-x-6">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.name}
-                to={link.to}
-                className={({ isActive }) =>
-                  `group relative flex items-center transition duration-300 pb-1
-                  after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px]
-                  after:bg-primary after:scale-x-0 after:origin-center after:transition-transform after:duration-300 after:ease-out
-                  hover:after:scale-x-100 ${
-                    isActive ? 'after:scale-x-100 text-primary' : 'text-sidebar-foreground'
-                  }`
-                }
-              >
-                <link.icon className="mr-2 h-4 w-4" />
-                {link.name}
-              </NavLink>
-            ))}
+            {navLinks.map((link) => 
+              link.hasDropdown ? (
+                <DropdownMenu key={link.name}>
+                  <DropdownMenuTrigger className="group relative flex items-center transition duration-300 pb-1 text-sidebar-foreground hover:text-primary">
+                    <link.icon className="mr-2 h-4 w-4" />
+                    {link.name}
+                    <ChevronDown className="h-4 w-4 ml-1" />
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="glass-panel border border-border/30 bg-card/80 backdrop-blur-md dark:bg-card/40 shadow-xl rounded-xl overflow-hidden min-w-[220px] animate-in fade-in-80 data-[side=bottom]:slide-in-from-top-1 data-[side=top]:slide-in-from-bottom-1">
+                    {serviceCategories.map((category) => (
+                      <DropdownMenuItem key={category.id} asChild>
+                        <NavLink 
+                          to={`/servicios/${category.id}`}
+                          className="flex items-center px-4 py-2.5 w-full text-foreground hover:bg-primary/10 hover:text-primary transition-colors duration-200 text-sm font-medium"
+                        >
+                          {category.icon && <span className="mr-3 text-lg">{category.icon}</span>}
+                          {category.name}
+                        </NavLink>
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <NavLink
+                  key={link.name}
+                  to={link.to}
+                  className={({ isActive }) =>
+                    `group relative flex items-center transition duration-300 pb-1
+                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[2px]
+                    after:bg-primary after:scale-x-0 after:origin-center after:transition-transform after:duration-300 after:ease-out
+                    hover:after:scale-x-100 ${
+                      isActive ? 'after:scale-x-100 text-primary' : 'text-sidebar-foreground'
+                    }`
+                  }
+                >
+                  <link.icon className="mr-2 h-4 w-4" />
+                  {link.name}
+                </NavLink>
+              )
+            )}
 
             <ThemeSwitcher />
           </div>
